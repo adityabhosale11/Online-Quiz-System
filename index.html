@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizOS — Online Quiz System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="index.html">Quiz<span>OS</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="quiz.html">Take Quiz</a>
+      <a href="result.html">Results</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left fade-up">
+      <span class="hero-tag">✦ Java Mini Project</span>
+      <h1 class="hero-title">
+        Test Your<br>
+        <span class="line2">Knowledge.</span>
+      </h1>
+      <p class="hero-desc">
+        A fully functional online quiz platform built with Java &amp; vanilla web tech. Challenge yourself with Java, OOP, and Data Structures questions.
+      </p>
+      <div class="hero-btns">
+        <a href="quiz.html" class="btn accent">Start Quiz →</a>
+        <a href="#categories" class="btn outline">Browse Topics</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-deco">Q?</div>
+      <div class="hero-card slide-in">
+        <div class="card-category">☕ Java Fundamentals</div>
+        <div class="card-question">Which of the following is NOT a Java primitive type?</div>
+        <div class="card-options">
+          <div class="card-opt" onclick="selectOpt(this, false)">A) int</div>
+          <div class="card-opt" onclick="selectOpt(this, false)">B) boolean</div>
+          <div class="card-opt" onclick="selectOpt(this, true)">C) String</div>
+          <div class="card-opt" onclick="selectOpt(this, false)">D) char</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-strip">
+    <div class="stat-item">
+      <div class="stat-num">10</div>
+      <div class="stat-label">Questions</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Categories</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">30s</div>
+      <div class="stat-label">Per Question</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">A+</div>
+      <div class="stat-label">Top Grade</div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="section" id="categories">
+    <div class="section-header">
+      <h2 class="section-title">Topics Covered</h2>
+      <span class="section-sub">3 categories • 10 questions</span>
+    </div>
+
+    <div class="categories-grid">
+      <a href="quiz.html" class="cat-card">
+        <div class="cat-icon">☕</div>
+        <div class="cat-tag">Beginner — Intermediate</div>
+        <div class="cat-title">Java Fundamentals</div>
+        <div class="cat-desc">Primitives, JVM, Keywords, OOP basics, Exception handling in Java.</div>
+        <div class="cat-questions">5 Questions · 1 mark each</div>
+      </a>
+
+      <a href="quiz.html" class="cat-card">
+        <div class="cat-icon">🏗️</div>
+        <div class="cat-tag">Intermediate</div>
+        <div class="cat-title">Object-Oriented Programming</div>
+        <div class="cat-desc">Encapsulation, Inheritance, Polymorphism, Abstraction and Interfaces.</div>
+        <div class="cat-questions">3 Questions · 1 mark each</div>
+      </a>
+
+      <a href="quiz.html" class="cat-card">
+        <div class="cat-icon">📊</div>
+        <div class="cat-tag">Intermediate</div>
+        <div class="cat-title">Data Structures</div>
+        <div class="cat-desc">Stack, Queue, LinkedList, Binary Search, and Time Complexity.</div>
+        <div class="cat-questions">2 Questions · 1 mark each</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>QuizOS — Java Mini Project</span>
+    <span>Built with ☕ Java + HTML/CSS/JS</span>
+  </footer>
+
+  <script>
+    function selectOpt(el, isCorrect) {
+      const opts = el.parentElement.querySelectorAll('.card-opt');
+      opts.forEach(o => o.classList.remove('selected', 'correct', 'wrong'));
+      if (isCorrect) {
+        el.classList.add('correct');
+        opts.forEach(o => {
+          if (o !== el) o.style.opacity = '0.5';
+        });
+      } else {
+        el.classList.add('wrong');
+      }
+    }
+  </script>
+</body>
+</html>

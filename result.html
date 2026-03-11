@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Results — QuizOS</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .review-section { padding: 0 4rem 4rem; max-width: 860px; margin: 0 auto; }
+    .review-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 2px solid var(--ink); }
+    .review-item { border: 2px solid var(--soft); border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+    .review-item.correct-item { border-color: var(--correct); }
+    .review-item.wrong-item { border-color: var(--wrong); }
+    .review-item.skip-item { border-color: var(--muted); }
+    .review-q { font-weight: 500; margin-bottom: 0.8rem; font-size: 0.95rem; }
+    .review-ans { font-size: 0.85rem; color: var(--muted); }
+    .review-ans span { font-weight: 600; }
+    .review-ans .correct-ans { color: var(--correct); }
+    .review-ans .wrong-ans { color: var(--wrong); }
+    .review-status { float: right; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .pass-badge { display: inline-block; background: var(--correct); color: white; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; letter-spacing: 2px; padding: 0.4rem 1.2rem; border-radius: 99px; text-transform: uppercase; }
+    .fail-badge { display: inline-block; background: var(--wrong); color: white; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.9rem; letter-spacing: 2px; padding: 0.4rem 1.2rem; border-radius: 99px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">Quiz<span>OS</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="quiz.html">Take Quiz</a>
+      <a href="result.html">Results</a>
+    </div>
+  </nav>
+
+  <div class="result-page fade-up">
+    <div class="result-header">
+      <span class="result-emoji" id="resultEmoji">🎉</span>
+      <div class="result-grade" id="resultGrade">A+</div>
+      <div class="result-title" id="resultTitle">Excellent Performance!</div>
+      <div class="result-subtitle" id="resultSubtitle">You passed the quiz</div>
+      <br>
+      <span id="passBadge"></span>
+    </div>
+
+    <div class="result-score-box">
+      <div class="score-main">
+        <div class="score-big" id="scoreBig">10</div>
+        <div class="score-max" id="scoreMax">out of 10</div>
+        <div class="score-label">Total Score</div>
+      </div>
+      <div class="score-stats">
+        <div class="score-stat">
+          <span class="score-stat-label">Percentage</span>
+          <span class="score-stat-val" id="statPct">100%</span>
+        </div>
+        <div class="score-stat">
+          <span class="score-stat-label">✅ Correct</span>
+          <span class="score-stat-val" style="color:var(--correct)" id="statCorrect">10</span>
+        </div>
+        <div class="score-stat">
+          <span class="score-stat-label">❌ Wrong</span>
+          <span class="score-stat-val" style="color:var(--wrong)" id="statWrong">0</span>
+        </div>
+        <div class="score-stat">
+          <span class="score-stat-label">⏭️ Skipped</span>
+          <span class="score-stat-val" id="statSkipped">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <a href="quiz.html" class="btn accent">Try Again →</a>
+      <a href="index.html" class="btn outline">← Back Home</a>
+      <button class="btn outline" onclick="window.print()">🖨️ Print Result</button>
+    </div>
+  </div>
+
+  <!-- ANSWER REVIEW -->
+  <div class="review-section">
+    <div class="review-title">Answer Review</div>
+    <div id="reviewList"></div>
+  </div>
+
+  <footer>
+    <span>QuizOS — Java Mini Project</span>
+    <span>Built with ☕ Java + HTML/CSS/JS</span>
+  </footer>
+
+  <script>
+    function getPerformance(pct) {
+      if (pct === 100) return { emoji: '🏆', title: 'Perfect Score! Outstanding!', subtitle: 'You answered every question correctly!' };
+      if (pct >= 90)   return { emoji: '🌟', title: 'Excellent Performance!', subtitle: 'You are a top scorer!' };
+      if (pct >= 80)   return { emoji: '👏', title: 'Great Job! Well Done!', subtitle: 'You passed with distinction.' };
+      if (pct >= 70)   return { emoji: '✅', title: 'Good Work! Keep it up!', subtitle: 'Above average performance.' };
+      if (pct >= 60)   return { emoji: '📚', title: 'Average. Keep Practicing!', subtitle: 'Room for improvement.' };
+      if (pct >= 50)   return { emoji: '⚠️', title: 'Just Passed. Need Improvement!', subtitle: 'Barely made it through.' };
+      return { emoji: '❌', title: 'Failed. Please Try Again!', subtitle: 'Don\'t give up — practice more!' };
+    }
+
+    function loadResults() {
+      const raw = sessionStorage.getItem('quizResult');
+
+      let result;
+      if (raw) {
+        result = JSON.parse(raw);
+      } else {
+        // Demo defaults if visited directly
+        result = {
+          score: 7, maxScore: 10, correct: 7, wrong: 2, unattempted: 1,
+          pct: 70, grade: 'B',
+          userAnswers: [0, 0, 1, 2, 0, 0, 2, 1, 1, 0],
+          questions: null
+        };
+      }
+
+      const perf = getPerformance(result.pct);
+      document.getElementById('resultEmoji').textContent = perf.emoji;
+      document.getElementById('resultTitle').textContent = perf.title;
+      document.getElementById('resultSubtitle').textContent = perf.subtitle;
+      document.getElementById('resultGrade').textContent = result.grade;
+      document.getElementById('scoreBig').textContent = result.score;
+      document.getElementById('scoreMax').textContent = 'out of ' + result.maxScore;
+      document.getElementById('statPct').textContent = result.pct + '%';
+      document.getElementById('statCorrect').textContent = result.correct;
+      document.getElementById('statWrong').textContent = result.wrong;
+      document.getElementById('statSkipped').textContent = result.unattempted;
+
+      const passed = result.pct >= 50;
+      document.getElementById('passBadge').innerHTML = passed
+        ? '<span class="pass-badge">✓ PASSED</span>'
+        : '<span class="fail-badge">✗ FAILED</span>';
+
+      // Answer review
+      if (result.questions) {
+        const list = document.getElementById('reviewList');
+        list.innerHTML = '';
+        result.questions.forEach((q, i) => {
+          const ua = result.userAnswers[i];
+          let cls = 'skip-item', statusText = '⏭️ SKIPPED', yourAns = '—';
+          if (ua !== -1) {
+            yourAns = q.options[ua];
+            if (ua === q.correct) { cls = 'correct-item'; statusText = '✅ CORRECT'; }
+            else { cls = 'wrong-item'; statusText = '❌ WRONG'; }
+          }
+          list.innerHTML += `
+            <div class="review-item ${cls}">
+              <div class="review-q">
+                <span class="review-status">${statusText}</span>
+                Q${i+1}. ${q.text}
+              </div>
+              <div class="review-ans">
+                Your answer: <span class="${ua === q.correct ? 'correct-ans' : 'wrong-ans'}">${yourAns}</span>
+                &nbsp;|&nbsp;
+                Correct: <span class="correct-ans">${q.options[q.correct]}</span>
+              </div>
+            </div>`;
+        });
+      }
+    }
+
+    loadResults();
+  </script>
+</body>
+</html>
